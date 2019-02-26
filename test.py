@@ -48,7 +48,7 @@ class Network(object):
         return self.variables.get_weights()
 
 # Define a remote function for generating fake data.
-@ray.remote(num_return_vals=2)
+@ray.remote(num_return_vals=2,num_gpus=0.1)
 def generate_fake_x_y_data(num_data, seed=0):
     # Seed numpy to make the script deterministic.
     np.random.seed(seed)
