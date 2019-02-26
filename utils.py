@@ -1,5 +1,5 @@
 
-from torch.autograd import Variable
+# from torch.autograd import Variable
 import random, pickle
 import numpy as np, torch, os, gym
 
@@ -135,7 +135,7 @@ class NormalizedActions(gym.ActionWrapper):
         action -= self.action_space.low
         action /= (self.action_space.high - self.action_space.low)
         action = action * 2 - 1
-        return actions
+        return action
 
 
 def fanin_init(size, fanin=None):
