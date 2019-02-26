@@ -1,7 +1,8 @@
 
 # from torch.autograd import Variable
 import random, pickle
-import numpy as np, torch, os, gym
+import numpy as np
+import os, gym
 
 class Tracker(): #Tracker
     def __init__(self, parameters, vars_string, project_string):
