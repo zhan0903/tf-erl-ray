@@ -1,18 +1,8 @@
-import numpy as np, os, time, sys, random
-import gym
+import numpy as np
+import gym,os, time, sys, random
 import argparse
-import time
 import logging
-import copy
 import ray,utils
-from utils import Actor
-import threading,queue
-from ray.rllib.utils.timer import TimerStat
-from pg_policy_graph import PGPolicyGraph
-from ray.rllib.agents.agent import Agent
-from ray.rllib.utils.annotations import override
-from ray.rllib.optimizers import SyncSamplesOptimizer
-from ray.rllib.agents.es import policies
 import tensorflow as tf
 
 
@@ -217,67 +207,6 @@ if __name__ == "__main__":
     rollout_ids = [worker.do_rollouts.remote() for worker in workers]
     results = ray.get(rollout_ids)
     print(results)
-
-
-
-
-
-
-
-# if __name__ == "__main__":
-#     parameters = Parameters()  # Create the Parameters class
-#     tracker = utils.Tracker(parameters, ['erl'], '_score.csv')  # Initiate tracker
-#     frame_tracker = utils.Tracker(parameters, ['frame_erl'], '_score.csv')  # Initiate tracker
-#     time_tracker = utils.Tracker(parameters, ['time_erl'], '_score.csv')
-#
-#     # Create Env
-#     env = utils.NormalizedActions(gym.make(env_tag))
-#     parameters.action_dim = env.action_space.shape[0]
-#     parameters.state_dim = env.observation_space.shape[0]
-#
-#     logger.debug("action_dim:{0},parameters.state_dim:{1}".format(parameters.action_dim, parameters.state_dim))
-#
-#     # Seed
-#     env.seed(parameters.seed);
-#     torch.manual_seed(parameters.seed);
-#     np.random.seed(parameters.seed);
-#     random.seed(parameters.seed)
-#
-#     # Create Agent
-#     ray.init(include_webui=False, ignore_reinit_error=True)
-#     # print(torch.cuda.device_count())
-#
-#     agent = Agent(parameters, env)
-#     print('Running', env_tag, ' State_dim:', parameters.state_dim, ' Action_dim:', parameters.action_dim)
-#
-#     next_save = 100;
-#     time_start = time.time()
-#     while True:  # agent.num_frames <= parameters.num_frames:
-#         best_train_fitness, erl_score, elite_index = agent.train()
-#         print('#Games:', agent.num_games, '#Frames:', agent.num_frames, ' Epoch_Max:',
-#               '%.2f' % best_train_fitness if best_train_fitness != None else None, ' Test_Score:',
-#               '%.2f' % erl_score if erl_score != None else None, ' Avg:', '%.2f' % tracker.all_tracker[0][1],
-#               'ENV ' + env_tag)
-#         print('RL Selection Rate: Elite/Selected/Discarded',
-#               '%.2f' % (agent.evolver.selection_stats['elite'] / agent.evolver.selection_stats['total']),
-#               '%.2f' % (agent.evolver.selection_stats['selected'] / agent.evolver.selection_stats['total']),
-#               '%.2f' % (agent.evolver.selection_stats['discarded'] / agent.evolver.selection_stats['total']))
-#
-#         # log experiment result
-#         tracker.update([erl_score], agent.num_games)
-#         frame_tracker.update([erl_score], agent.num_frames)
-#         time_tracker.update([erl_score], time.time() - time_start)
-#
-#         # Save Policy
-#         if agent.num_games > next_save:
-#             next_save += 100
-#             if elite_index != None: torch.save(agent.pop[elite_index].state_dict(),
-#                                                parameters.save_foldername + 'evo_net')
-#             print("Progress Saved")
-#
-#         exit(0)
-
-
 
 
 
