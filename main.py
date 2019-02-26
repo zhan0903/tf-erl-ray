@@ -173,7 +173,7 @@ class Worker(object):
     def do_rollout(self, is_action_noise=False, store_transition=True):
         total_reward = 0.0
         state = self.env.reset()
-        state = utils.to_tensor(state).unsqueeze(0)
+        # state = utils.to_tensor(state).unsqueeze(0)
         # if self.args.is_cuda:
         #     state = state.cuda()
         done = False
