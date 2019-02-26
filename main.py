@@ -4,6 +4,7 @@ import argparse
 import logging
 import ray, utils, tf_utils
 import tensorflow as tf
+from tf.python.ops import random_ops
 
 
 render = False
@@ -104,6 +105,10 @@ class OUNoise:
         return self.state * self.scale
 
 
+ def _initializer(shape, dtype=tf.float32, partition_info=None):
+            return random_ops.random_normal(shape)
+
+
 class ActorPolicy(object):
     def __init__(self, hparams, sess):
         # initialization
@@ -117,7 +122,7 @@ class ActorPolicy(object):
             inputs=self._input,
             num_outputs=hparams.hidden_size,
             activation_fn=tf.nn.relu,
-            weights_initializer=tf.random_normal())
+            weights_initializer=_initializer)
 
         logits = tf.contrib.layers.fully_connected(
             inputs=hidden1,
