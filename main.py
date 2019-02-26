@@ -144,7 +144,7 @@ class ActorPolicy(object):
         act_prob = tf.gather(tf.reshape(log_prob, [-1]), indices)
 
         # surrogate loss
-        loss = -tf.reduce_sum(tf.mul(act_prob, self._advantages))
+        loss = -tf.reduce_sum(tf.multiply(act_prob, self._advantages))
 
         # update
         optimizer = tf.train.RMSPropOptimizer(hparams.learning_rate)
