@@ -204,7 +204,7 @@ if __name__ == "__main__":
     workers = [Worker.remote(parameters)
                for _ in range(num_workers)]
 
-    rollout_ids = [worker.do_rollouts.remote() for worker in workers]
+    rollout_ids = [worker.do_rollout.remote() for worker in workers]
     results = ray.get(rollout_ids)
     print(results)
 
