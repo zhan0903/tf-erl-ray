@@ -36,6 +36,11 @@ DEFAULT_CONFIG = {
 
 class Parameters:
     def __init__(self):
+        self.input_size = None
+        self.hidden_size = 36
+        self.num_actions = None
+        self.learning_rate = 0.1
+
         #Number of Frames to Run
         if env_tag == 'Hopper-v2': self.num_frames = 4000000
         elif env_tag == 'Ant-v2': self.num_frames = 6000000
@@ -106,17 +111,17 @@ class ActorPolicy(object):
 
         # build the graph
         self._input = tf.placeholder(tf.float32,
-                                     shape=[None, hparams['input_size']])
+                                     shape=[None, hparams.input_size])
 
         hidden1 = tf.contrib.layers.fully_connected(
             inputs=self._input,
-            num_outputs=hparams['hidden_size'],
+            num_outputs=hparams.hidden_size,
             activation_fn=tf.nn.relu,
             weights_initializer=tf.random_normal)
 
         logits = tf.contrib.layers.fully_connected(
             inputs=hidden1,
-            num_outputs=hparams['num_actions'],
+            num_outputs=hparams.num_actions,
             activation_fn=None)
 
         # op to sample an action
@@ -137,7 +142,7 @@ class ActorPolicy(object):
         loss = -tf.reduce_sum(tf.mul(act_prob, self._advantages))
 
         # update
-        optimizer = tf.train.RMSPropOptimizer(hparams['learning_rate'])
+        optimizer = tf.train.RMSPropOptimizer(hparams.learning_rate)
         self._train = optimizer.minimize(loss)
 
     def act(self, observation):
@@ -151,14 +156,14 @@ class ActorPolicy(object):
         self._s.run(self._train, feed_dict=batch_feed)
 
 
-@ray.remote(num_gpus=0.2)
+@ray.remote(num_gpus=0.1)
 class Worker(object):
     def __init__(self, args):
         self.env = utils.NormalizedActions(gym.make(env_tag))
         self.args = args
         self.ounoise = OUNoise(args.action_dim)
-        self.sess = utils.make_session(single_threaded=True)
-        self.policy = ActorPolicy(self.sess, self.args)
+        self.sess = tf_utils.make_session(single_threaded=True)
+        self.policy = ActorPolicy(self.args, self.sess)
 
     def do_rollout(self, is_action_noise=False, store_transition=True):
         total_reward = 0.0
@@ -193,7 +198,9 @@ if __name__ == "__main__":
     # Create Env
     env = utils.NormalizedActions(gym.make(env_tag))
     parameters.action_dim = env.action_space.shape[0]
+    parameters.num_actions = env.action_space.shape[0]
     parameters.state_dim = env.observation_space.shape[0]
+    parameters.input_size = env.observation_space.shape[0]
 
     env.seed(parameters.seed)
     tf.random.set_random_seed(parameters.seed)
