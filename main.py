@@ -2,7 +2,7 @@ import numpy as np
 import gym,os, time, sys, random
 import argparse
 import logging
-import ray,utils
+import ray, utils, tf_utils
 import tensorflow as tf
 
 
