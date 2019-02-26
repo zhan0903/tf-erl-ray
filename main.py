@@ -197,7 +197,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 10
+    num_workers = 2
     parameters = Parameters()
 
     # Create Env
