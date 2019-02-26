@@ -105,7 +105,7 @@ class OUNoise:
         return self.state * self.scale
 
 
- def _initializer(shape, dtype=tf.float32, partition_info=None):
+def _initializer(shape, dtype=tf.float32, partition_info=None):
         return random_ops.random_normal(shape)
 
 
