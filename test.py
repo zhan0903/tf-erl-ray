@@ -6,7 +6,7 @@ import ray.experimental.tf_utils
 ray.init()
 
 BATCH_SIZE = 100
-NUM_BATCHES = 1
+NUM_BATCHES = 10
 NUM_ITERS = 201
 
 class Network(object):
