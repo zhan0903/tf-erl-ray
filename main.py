@@ -4,7 +4,7 @@ import argparse
 import logging
 import ray, utils, tf_utils
 import tensorflow as tf
-from tf.python.ops import random_ops
+from tensorflow.python.ops import random_ops
 
 
 render = False
