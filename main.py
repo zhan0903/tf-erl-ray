@@ -106,7 +106,7 @@ class OUNoise:
 
 
  def _initializer(shape, dtype=tf.float32, partition_info=None):
-            return random_ops.random_normal(shape)
+        return random_ops.random_normal(shape)
 
 
 class ActorPolicy(object):
