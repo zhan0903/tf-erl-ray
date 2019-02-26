@@ -117,7 +117,7 @@ class ActorPolicy(object):
             inputs=self._input,
             num_outputs=hparams.hidden_size,
             activation_fn=tf.nn.relu,
-            weights_initializer=tf.random_normal)
+            weights_initializer=tf.random_normal())
 
         logits = tf.contrib.layers.fully_connected(
             inputs=hidden1,
