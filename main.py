@@ -112,6 +112,7 @@ def _initializer(shape, dtype=tf.float32, partition_info=None):
 class ActorPolicy(object):
     def __init__(self, hparams, sess):
         # initialization
+
         self._s = sess
 
         # build the graph
