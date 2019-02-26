@@ -174,8 +174,8 @@ class Worker(object):
         total_reward = 0.0
         state = self.env.reset()
         state = utils.to_tensor(state).unsqueeze(0)
-        if self.args.is_cuda:
-            state = state.cuda()
+        # if self.args.is_cuda:
+        #     state = state.cuda()
         done = False
 
         while not done:
