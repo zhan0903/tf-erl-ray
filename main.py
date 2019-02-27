@@ -232,8 +232,8 @@ class Worker(object):
 
         while not done:
             action = self.policy.choose_action(state)
-            action.clamp(-1, 1)
-            action = utils.to_numpy(action.cpu())
+            # action.clamp(-1, 1)
+            # action = utils.to_numpy(action.cpu())
             if is_action_noise: action += self.ounoise.noise()
             next_state, reward, done, info = self.env.step(action.flatten())  # Simulate one step in environment
             next_state = utils.to_tensor(next_state).unsqueeze(0)
