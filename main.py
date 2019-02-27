@@ -162,7 +162,7 @@ class ActorPolicy(object):
         self._s.run(self._train, feed_dict=batch_feed)
 
 
-@ray.remote(num_gpus=0.1)
+@ray.remote(num_gpus=1)
 class Worker(object):
     def __init__(self, args):
         self.env = utils.NormalizedActions(gym.make(env_tag))
@@ -200,6 +200,7 @@ class Worker(object):
 if __name__ == "__main__":
     num_workers = 2
     parameters = Parameters()
+    tf.enable_eager_execution()
 
     # Create Env
     env = utils.NormalizedActions(gym.make(env_tag))
