@@ -213,7 +213,7 @@ class ActorPolicy(object):
         return discounted_ep_rs
 
 
-@ray.remote(num_gpus=0.1)
+@ray.remote(num_gpus=1)
 class Worker(object):
     def __init__(self, args):
         self.env = utils.NormalizedActions(gym.make(env_tag))
@@ -250,7 +250,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 10
+    num_workers = 4
     parameters = Parameters()
     # tf.enable_eager_execution()
 
