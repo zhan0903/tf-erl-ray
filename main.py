@@ -245,6 +245,7 @@ class Worker(object):
                 self.policy.store_transition(state, action, reward)
             state = next_state
         # if store_transition: self.num_games += 1
+        self.policy.learn()
         return total_reward
 
 
