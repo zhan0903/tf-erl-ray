@@ -249,9 +249,9 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 4
+    num_workers = 2
     parameters = Parameters()
-    tf.enable_eager_execution()
+    # tf.enable_eager_execution()
 
     # Create Env
     env = utils.NormalizedActions(gym.make(env_tag))
