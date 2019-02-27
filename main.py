@@ -35,7 +35,12 @@ DEFAULT_CONFIG = {
 # yapf: enable
 
 
-
+def make_session(single_threaded):
+    if not single_threaded:
+        return tf.Session()
+    config = tf.ConfigProto(inter_op_parallelism_threads=1, intra_op_parallelism_threads=1)
+    config.gpu_options.allow_growth = True
+    return tf.Session(config=config)
 
 
 class Parameters:
@@ -219,7 +224,7 @@ class Worker(object):
         self.env = utils.NormalizedActions(gym.make(env_tag))
         self.args = args
         self.ounoise = OUNoise(args.action_dim)
-        self.sess = tf_utils.make_session(single_threaded=True)
+        self.sess = make_session(single_threaded=True)
         self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
 
     def do_rollout(self, is_action_noise=False, store_transition=True):
