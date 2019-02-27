@@ -255,6 +255,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
+    time_start = time.time()
     num_workers = 10
     parameters = Parameters()
     # tf.enable_eager_execution()
@@ -278,6 +279,7 @@ if __name__ == "__main__":
     rollout_ids = [worker.do_rollout.remote() for worker in workers]
     results = ray.get(rollout_ids)
     print(results)
+    print(time.time()-time_start)
 
 
 
