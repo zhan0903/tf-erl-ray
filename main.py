@@ -255,7 +255,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 1
+    num_workers = 10
     parameters = Parameters()
     # tf.enable_eager_execution()
 
