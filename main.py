@@ -35,6 +35,9 @@ DEFAULT_CONFIG = {
 # yapf: enable
 
 
+
+
+
 class Parameters:
     def __init__(self):
         self.input_size = None
@@ -105,61 +108,109 @@ class OUNoise:
         return self.state * self.scale
 
 
-def _initializer(shape, dtype=tf.float32, partition_info=None):
-        return random_ops.random_normal(shape)
-
-
 class ActorPolicy(object):
-    def __init__(self, hparams, sess):
-        # initialization
+    def __init__(
+            self,
+            n_actions,
+            n_features,
+            session,
+            learning_rate=0.01,
+            reward_decay=0.95,
+            output_graph=False,
+    ):
+        self.n_actions = n_actions
+        self.n_features = n_features
+        self.lr = learning_rate
+        self.gamma = reward_decay
 
-        self._s = sess
+        self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
-        # build the graph
-        self._input = tf.placeholder(tf.float32,
-                                     shape=[None, hparams.input_size])
+        self._build_net()
 
-        hidden1 = tf.contrib.layers.fully_connected(
-            inputs=self._input,
-            num_outputs=hparams.hidden_size,
-            activation_fn=tf.nn.relu,
-            weights_initializer=_initializer)
+        self.sess = session
 
-        logits = tf.contrib.layers.fully_connected(
-            inputs=hidden1,
-            num_outputs=hparams.num_actions,
-            activation_fn=None)
+        if output_graph:
+            # $ tensorboard --logdir=logs
+            # http://0.0.0.0:6006/
+            # tf.train.SummaryWriter soon be deprecated, use following
+            tf.summary.FileWriter("logs/", self.sess.graph)
 
-        # op to sample an action
-        self._sample = tf.reshape(tf.multinomial(logits, 1), [])
+        self.sess.run(tf.global_variables_initializer())
 
-        # get log probabilities
-        log_prob = tf.log(tf.nn.softmax(logits))
+    def _build_net(self):
+        with tf.name_scope('inputs'):
+            self.tf_obs = tf.placeholder(tf.float32, [None, self.n_features], name="observations")
+            self.tf_acts = tf.placeholder(tf.int32, [None, ], name="actions_num")
+            self.tf_vt = tf.placeholder(tf.float32, [None, ], name="actions_value")
+        # fc1
+        layer = tf.layers.dense(
+            inputs=self.tf_obs,
+            units=10,
+            activation=tf.nn.tanh,  # tanh activation
+            kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3),
+            bias_initializer=tf.constant_initializer(0.1),
+            name='fc1'
+        )
+        # fc2
+        all_act = tf.layers.dense(
+            inputs=layer,
+            units=self.n_actions,
+            activation=None,
+            kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3),
+            bias_initializer=tf.constant_initializer(0.1),
+            name='fc2'
+        )
 
-        # training part of graph
-        self._acts = tf.placeholder(tf.int32)
-        self._advantages = tf.placeholder(tf.float32)
+        self.all_act_prob = tf.nn.softmax(all_act, name='act_prob')  # use softmax to convert to probability
 
-        # get log probs of actions from episode
-        indices = tf.range(0, tf.shape(log_prob)[0]) * tf.shape(log_prob)[1] + self._acts
-        act_prob = tf.gather(tf.reshape(log_prob, [-1]), indices)
+        with tf.name_scope('loss'):
+            # to maximize total reward (log_p * R) is to minimize -(log_p * R), and the tf only have minimize(loss)
+            neg_log_prob = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=all_act,
+                                                                          labels=self.tf_acts)  # this is negative log of chosen action
+            # or in this way:
+            # neg_log_prob = tf.reduce_sum(-tf.log(self.all_act_prob)*tf.one_hot(self.tf_acts, self.n_actions), axis=1)
+            loss = tf.reduce_mean(neg_log_prob * self.tf_vt)  # reward guided loss
 
-        # surrogate loss
-        loss = -tf.reduce_sum(tf.multiply(act_prob, self._advantages))
+        with tf.name_scope('train'):
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(loss)
 
-        # update
-        optimizer = tf.train.RMSPropOptimizer(hparams.learning_rate)
-        self._train = optimizer.minimize(loss)
+    def choose_action(self, observation):
+        prob_weights = self.sess.run(self.all_act_prob, feed_dict={self.tf_obs: observation[np.newaxis, :]})
+        action = np.random.choice(range(prob_weights.shape[1]),
+                                  p=prob_weights.ravel())  # select action w.r.t the actions prob
+        return action
 
-    def act(self, observation):
-        # get one action, by sampling
-        return self._s.run(self._sample, feed_dict={self._input: [observation]})
+    def store_transition(self, s, a, r):
+        self.ep_obs.append(s)
+        self.ep_as.append(a)
+        self.ep_rs.append(r)
 
-    def train_step(self, obs, acts, advantages):
-        batch_feed = {self._input: obs, \
-                      self._acts: acts, \
-                      self._advantages: advantages}
-        self._s.run(self._train, feed_dict=batch_feed)
+    def learn(self):
+        # discount and normalize episode reward
+        discounted_ep_rs_norm = self._discount_and_norm_rewards()
+
+        # train on episode
+        self.sess.run(self.train_op, feed_dict={
+            self.tf_obs: np.vstack(self.ep_obs),  # shape=[None, n_obs]
+            self.tf_acts: np.array(self.ep_as),  # shape=[None, ]
+            self.tf_vt: discounted_ep_rs_norm,  # shape=[None, ]
+        })
+
+        self.ep_obs, self.ep_as, self.ep_rs = [], [], []  # empty episode data
+        return discounted_ep_rs_norm
+
+    def _discount_and_norm_rewards(self):
+        # discount episode rewards
+        discounted_ep_rs = np.zeros_like(self.ep_rs)
+        running_add = 0
+        for t in reversed(range(0, len(self.ep_rs))):
+            running_add = running_add * self.gamma + self.ep_rs[t]
+            discounted_ep_rs[t] = running_add
+
+        # normalize episode rewards
+        discounted_ep_rs -= np.mean(discounted_ep_rs)
+        discounted_ep_rs /= np.std(discounted_ep_rs)
+        return discounted_ep_rs
 
 
 @ray.remote(num_gpus=1)
@@ -169,7 +220,7 @@ class Worker(object):
         self.args = args
         self.ounoise = OUNoise(args.action_dim)
         self.sess = tf_utils.make_session(single_threaded=True)
-        self.policy = ActorPolicy(self.args, self.sess)
+        self.policy = ActorPolicy(self.args.action_dim,self.args.state_dim, self.sess)
 
     def do_rollout(self, is_action_noise=False, store_transition=True):
         total_reward = 0.0
