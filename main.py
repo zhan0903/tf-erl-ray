@@ -231,7 +231,7 @@ class Worker(object):
         done = False
 
         while not done:
-            action = self.policy.act(state)
+            action = self.policy.choose_action(state)
             action.clamp(-1, 1)
             action = utils.to_numpy(action.cpu())
             if is_action_noise: action += self.ounoise.noise()
@@ -242,7 +242,7 @@ class Worker(object):
             total_reward += reward
 
             if store_transition:
-                self.add_experience(state, action, next_state, reward, done)
+                self.policy.store_transition(state, action, reward)
             state = next_state
         if store_transition: self.num_games += 1
         return total_reward
