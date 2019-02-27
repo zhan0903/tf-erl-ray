@@ -236,7 +236,7 @@ class Worker(object):
             # action = utils.to_numpy(action.cpu())
             if is_action_noise: action += self.ounoise.noise()
             next_state, reward, done, info = self.env.step(action)  # Simulate one step in environment
-            next_state = utils.to_tensor(next_state).unsqueeze(0)
+            # next_state = utils.to_tensor(next_state).unsqueeze(0)
             if self.args.is_cuda:
                 next_state = next_state.cuda()
             total_reward += reward
