@@ -255,7 +255,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 10
+    num_workers = 1
     parameters = Parameters()
     # tf.enable_eager_execution()
 
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     parameters.input_size = env.observation_space.shape[0]
 
     env.seed(parameters.seed)
-    tf.random.set_random_seed(parameters.seed)
+    tf.set_random_seed(parameters.seed)
     np.random.seed(parameters.seed)
     random.seed(parameters.seed)
 
