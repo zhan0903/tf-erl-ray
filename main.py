@@ -249,7 +249,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 2
+    num_workers = 4
     parameters = Parameters()
     tf.enable_eager_execution()
 
