@@ -213,14 +213,14 @@ class ActorPolicy(object):
         return discounted_ep_rs
 
 
-@ray.remote(num_gpus=1)
+@ray.remote(num_gpus=0.3)
 class Worker(object):
     def __init__(self, args):
         self.env = utils.NormalizedActions(gym.make(env_tag))
         self.args = args
         self.ounoise = OUNoise(args.action_dim)
         self.sess = tf_utils.make_session(single_threaded=True)
-        self.policy = ActorPolicy(self.args.action_dim,self.args.state_dim, self.sess)
+        self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
 
     def do_rollout(self, is_action_noise=False, store_transition=True):
         total_reward = 0.0
@@ -250,7 +250,7 @@ class Worker(object):
 
 
 if __name__ == "__main__":
-    num_workers = 4
+    num_workers = 10
     parameters = Parameters()
     # tf.enable_eager_execution()
 
