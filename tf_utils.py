@@ -31,9 +31,9 @@ def compute_centered_ranks(x):
 def make_session(single_threaded):
     if not single_threaded:
         return tf.Session()
-    return tf.Session(
-        config=tf.ConfigProto(
-            inter_op_parallelism_threads=1, intra_op_parallelism_threads=1))
+    config = tf.ConfigProto(inter_op_parallelism_threads=1, intra_op_parallelism_threads=1)
+    config.gpu_options.allow_growth = True
+    return tf.Session(config=config)
 
 
 def itergroups(items, group_size):
