@@ -187,6 +187,7 @@ if __name__ == "__main__":
     results = ray.get(rollout_ids)
     fitness, pops = process_results(results)
     print(fitness)
+    print(pops)
     print(time.time()-time_start)
 
 
