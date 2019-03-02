@@ -5,6 +5,7 @@ import logging
 import ray, utils
 import tensorflow as tf
 from tensorflow.python.ops import random_ops
+import ray.experimental.tf_utils
 
 
 render = False
@@ -141,6 +142,13 @@ class ActorPolicy(object):
             tf.summary.FileWriter("logs/", self.sess.graph)
 
         self.sess.run(tf.global_variables_initializer())
+        self.variables = ray.experimental.tf_utils.TensorFlowVariables(self.loss, self.sess)
+
+    def set_weights(self):
+        pass
+
+    def get_weights(self):
+        return self.variables.get_weights()
 
     def _build_net(self):
         with tf.name_scope('inputs'):
@@ -174,10 +182,10 @@ class ActorPolicy(object):
                                                                           labels=self.tf_acts)  # this is negative log of chosen action
             # or in this way:
             # neg_log_prob = tf.reduce_sum(-tf.log(self.all_act_prob)*tf.one_hot(self.tf_acts, self.n_actions), axis=1)
-            loss = tf.reduce_mean(neg_log_prob * self.tf_vt)  # reward guided loss
+            self.loss = tf.reduce_mean(neg_log_prob * self.tf_vt)  # reward guided loss
 
         with tf.name_scope('train'):
-            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(loss)
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
 
     def choose_action(self, observation):
         prob_weights = self.sess.run(self.all_act_prob, feed_dict={self.tf_obs: observation[np.newaxis, :]})
@@ -227,6 +235,12 @@ class Worker(object):
         self.sess = make_session(single_threaded=True)
         self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
 
+    def set_weights(self):
+        pass
+
+    def get_weights(self):
+        pass
+
     def do_rollout(self, is_action_noise=False, store_transition=True):
         total_reward = 0.0
         state = self.env.reset()
@@ -234,7 +248,6 @@ class Worker(object):
         # if self.args.is_cuda:
         #     state = state.cuda()
         done = False
-
         while not done:
             action = self.policy.choose_action(state)
             # action.clamp(-1, 1)
@@ -251,7 +264,8 @@ class Worker(object):
             state = next_state
         # if store_transition: self.num_games += 1
         self.policy.learn()
-        return total_reward
+
+        return total_reward, self.policy.get_weights()
 
 
 if __name__ == "__main__":
