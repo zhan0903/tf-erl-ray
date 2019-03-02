@@ -189,8 +189,8 @@ if __name__ == "__main__":
     rollout_ids = [worker.do_rollout.remote() for worker in workers]
     results = ray.get(rollout_ids)
     all_fitness, pops = process_results(results)
-    print(all_fitness)
-    print(pops)
+    # print(all_fitness)
+    # print(pops)
     print(time.time()-time_start)
 
     ##implement the evolver process
