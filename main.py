@@ -7,6 +7,9 @@ import tensorflow as tf
 from tensorflow.python.ops import random_ops
 import ray.experimental.tf_utils
 from policy import ActorPolicy
+import mod_neuro_evo as utils_ne
+
+
 
 
 render = False
@@ -185,10 +188,19 @@ if __name__ == "__main__":
     time_start = time.time()
     rollout_ids = [worker.do_rollout.remote() for worker in workers]
     results = ray.get(rollout_ids)
-    fitness, pops = process_results(results)
-    print(fitness)
+    all_fitness, pops = process_results(results)
+    print(all_fitness)
     print(pops)
     print(time.time()-time_start)
+
+    ##implement the evolver process
+    evolver = utils_ne.SSNE(parameters)
+    elite_index = evolver.epoch(pops, all_fitness)
+    print("elite_index,",elite_index)
+
+
+
+
 
 
 
