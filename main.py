@@ -5,7 +5,7 @@ import logging
 import ray, utils
 import tensorflow as tf
 from tensorflow.python.ops import random_ops
-
+import ray.experimental.tf_utils
 
 
 render = False
