@@ -148,7 +148,7 @@ class ActorPolicy(object):
         pass
 
     def get_weights(self):
-        return self.variables.get_weights()
+        return self.variables.get_flat()
 
     def _build_net(self):
         with tf.name_scope('inputs'):
@@ -235,12 +235,6 @@ class Worker(object):
         self.sess = make_session(single_threaded=True)
         self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
 
-    def set_weights(self):
-        pass
-
-    def get_weights(self):
-        pass
-
     def do_rollout(self, is_action_noise=False, store_transition=True):
         total_reward = 0.0
         state = self.env.reset()
@@ -266,6 +260,10 @@ class Worker(object):
         self.policy.learn()
 
         return total_reward, self.policy.get_weights()
+
+def collect_results()
+
+
 
 
 if __name__ == "__main__":
