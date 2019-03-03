@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from scipy.special import expit
-import fastrand, math
+import fastrand, math,copy
 
 
 #Neuroevolution SSNE
@@ -110,7 +110,10 @@ class SSNE:
 
     def clone(self, master, replacee):  # Replace the replacee individual with master
         print("type of mastar, replacee", type(master),type(replacee))
-        for target_param, source_param in zip(replacee.parameters(), master.parameters()):
+        # replacee = copy.deepcopy(master)
+        #
+        for target_param, source_param in zip(replacee, master):
+            print(target_param,source_param)
             target_param.data.copy_(source_param.data)
 
     def reset_genome(self, gene):
