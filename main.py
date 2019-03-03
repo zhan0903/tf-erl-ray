@@ -127,6 +127,7 @@ class Worker(object):
         self.ounoise = OUNoise(args.action_dim)
         self.sess = make_session(single_threaded=True)
         self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
+        self.num_frames = 0
 
     def do_rollout(self, params,is_action_noise=False, store_transition=True):
         total_reward = 0.0
@@ -150,20 +151,24 @@ class Worker(object):
 
             if store_transition:
                 self.policy.store_transition(state, action, reward)
+                self.num_frames += 1
             state = next_state
         # if store_transition: self.num_games += 1
         self.policy.learn()
 
-        return total_reward, self.policy.get_weights()
+        return total_reward, self.policy.get_weights(), self.num_frames
 
 
 def process_results(results):
     pops = []
     fitness = []
+    num_frames = []
     for result in results:
+        num_frames.append(result[2])
         pops.append(result[1])
         fitness.append(result[0])
-    return fitness, pops
+
+    return fitness, pops, num_frames
 
 
 if __name__ == "__main__":
@@ -195,8 +200,9 @@ if __name__ == "__main__":
         time_start = time.time()
         rollout_ids = [worker.do_rollout.remote(pop_params) for worker, pop_params in zip(workers,pops_new)]
         results = ray.get(rollout_ids)
-        all_fitness, pops = process_results(results)
+        all_fitness, pops, num_frames = process_results(results)
         print("maximum score,", max(all_fitness))
+        print("all num_frames,", sum(num_frames))
         time_evaluate = time.time()-time_start
         time_middle = time.time()
         print("time for evalutation,",time_evaluate)
