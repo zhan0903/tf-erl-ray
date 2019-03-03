@@ -120,7 +120,7 @@ class SSNE:
         # replacee = copy.deepcopy(master)
         #
         # print(master,replacee)
-        for k,v in master.items():
+        for k, v in master.items():
             # print(k,v)
             replacee[k] = v
 
@@ -172,10 +172,16 @@ class SSNE:
             unselects.append(unselects[fastrand.pcg32bounded(len(unselects))])
         for i, j in zip(unselects[0::2], unselects[1::2]):
             print("i,j",i,j)
+            print("pop[i],", pop[i])
+            print("==============")
+            print("pop[j],", pop[j])
             off_i = random.choice(new_elitists);
             off_j = random.choice(offsprings)
             self.clone(master=pop[off_i], replacee=pop[i])
             self.clone(master=pop[off_j], replacee=pop[j])
+            print("pop[i],after,", pop[i])
+            print("==============")
+            print("pop[j],after,", pop[j])
             self.crossover_inplace(pop[i], pop[j])
 
         # Crossover for selected offsprings
