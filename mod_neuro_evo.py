@@ -42,11 +42,11 @@ class SSNE:
             # References to the variable tensors
             W1 = v1
             W2 = v2
-            print("-------begin----------")
-            print(W1)
-            print("-----------------------")
-            print(W2)
-            print("--------end------------")
+            # print("-------begin----------")
+            # print(W1)
+            # print("-----------------------")
+            # print(W2)
+            # print("--------end------------")
 
             if len(W1.shape) == 2: #Weights no bias
                 num_variables = W1.shape[0]
@@ -69,11 +69,11 @@ class SSNE:
                     receiver_choice = random.random()  # Choose which gene to receive the perturbation
                     if receiver_choice < 0.5:
                         ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-                        print("ind_cr,",ind_cr)
+                        # print("ind_cr,",ind_cr)
                         W1[ind_cr] = W2[ind_cr]
                     else:
                         ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-                        print("ind_cr,", ind_cr)
+                        # print("ind_cr,", ind_cr)
                         W2[ind_cr] = W1[ind_cr]
 
     def mutate_inplace(self, gene):
@@ -93,8 +93,9 @@ class SSNE:
 
             # References to the variable keys
             W = model_params[key]
+            print("W,before", W)
             if len(W.shape) == 2: #Weights, no bias
-
+                print("W,after", W)
                 num_weights = W.shape[0]*W.shape[1]
                 ssne_prob = ssne_probabilities[i]
 
