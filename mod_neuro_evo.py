@@ -111,22 +111,13 @@ class SSNE:
                         W[ind_dim1, ind_dim2] = self.regularize_weight(W[ind_dim1, ind_dim2], 1000000)
 
     def clone(self, master, replacee):  # Replace the replacee individual with master
-        # print("type of mastar, replacee", type(master),type(replacee))
-        # replacee = copy.deepcopy(master)
-        #
-        # print(master,replacee)
         for k, v in master.items():
             # print(k,v)
             replacee[k] = copy.deepcopy(v)
 
-
-        # for target_param, source_param in zip(replacee, master):
-        #     print(type(target_param),type(source_param))
-        #     target_param.data.copy_(source_param.data)
-
-    def reset_genome(self, gene):
-        for param in (gene.parameters()):
-            param.data.copy_(param.data)
+    # def reset_genome(self, gene):
+    #     for param in (gene.parameters()):
+    #         param.data.copy_(param.data)
 
     def epoch(self, pop, fitness_evals):
 

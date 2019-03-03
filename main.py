@@ -128,8 +128,10 @@ class Worker(object):
         self.sess = make_session(single_threaded=True)
         self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
 
-    def do_rollout(self, is_action_noise=False, store_transition=True):
+    def do_rollout(self, params,is_action_noise=False, store_transition=True):
         total_reward = 0.0
+        if params:
+            self.policy.set_weights(params)
         state = self.env.reset()
         # state = utils.to_tensor(state).unsqueeze(0)
         # if self.args.is_cuda:
@@ -185,23 +187,29 @@ if __name__ == "__main__":
     ray.init(include_webui=False, ignore_reinit_error=True)
     workers = [Worker.remote(parameters)
                for _ in range(num_workers)]
+    pops_new = [None for _ in range(num_workers)]
+    print(pops_new)
 
-    time_start = time.time()
-    rollout_ids = [worker.do_rollout.remote() for worker in workers]
-    results = ray.get(rollout_ids)
-    all_fitness, pops = process_results(results)
-    # print(all_fitness)
-    # print(pops)
-    time_evaluate = time.time()-time_start
-    time_middle = time.time()
-    print("time for evalutation,",time_evaluate)
-    pops_new = copy.deepcopy(pops)
-    ##implement the evolver process
-    evolver = utils_ne.SSNE(parameters)
-    elite_index = evolver.epoch(pops_new, all_fitness)
-    print("elite_index,",elite_index)
-    time_evolve = time.time()-time_middle
-    print("time for evolve,",time_evolve)
+    while True:
+        # parallel pg process
+        time_start = time.time()
+        rollout_ids = [worker.do_rollout.remote(pop_params) for worker, pop_params in zip(workers,pops_new)]
+        results = ray.get(rollout_ids)
+        all_fitness, pops = process_results(results)
+        print("maximum score,", max(all_fitness))
+        time_evaluate = time.time()-time_start
+        time_middle = time.time()
+        print("time for evalutation,",time_evaluate)
+        pops_new = copy.deepcopy(pops)
+
+        # evolver process
+        evolver = utils_ne.SSNE(parameters)
+        elite_index = evolver.epoch(pops_new, all_fitness)
+        print("elite_index,", elite_index)
+        time_evolve = time.time()-time_middle
+        print("time for evolve,", time_evolve)
+
+
 
 
 
