@@ -38,16 +38,8 @@ class SSNE:
 
     def crossover_inplace(self, gene1, gene2):
         for (k1,v1), (k2,v2) in zip(gene1.items(), gene2.items()):
-
-            # References to the variable tensors
             W1 = v1
             W2 = v2
-            # print("-------begin----------")
-            # print(W1)
-            # print("-----------------------")
-            # print(W2)
-            # print("--------end------------")
-
             if len(W1.shape) == 2: #Weights no bias
                 num_variables = W1.shape[0]
                 # Crossover opertation [Indexed by row]
@@ -174,17 +166,10 @@ class SSNE:
         if len(unselects) % 2 != 0:  # Number of unselects left should be even
             unselects.append(unselects[fastrand.pcg32bounded(len(unselects))])
         for i, j in zip(unselects[0::2], unselects[1::2]):
-            print("i,j",i,j)
-            print("pop[i],", pop[i])
-            print("==============")
-            print("pop[j],", pop[j])
             off_i = random.choice(new_elitists);
             off_j = random.choice(offsprings)
             self.clone(master=pop[off_i], replacee=pop[i])
             self.clone(master=pop[off_j], replacee=pop[j])
-            print("pop[i],after,", pop[i])
-            print("==============")
-            print("pop[j],after,", pop[j])
             self.crossover_inplace(pop[i], pop[j])
 
         # Crossover for selected offsprings
@@ -194,7 +179,6 @@ class SSNE:
         # Mutate all genes in the population except the new elitists
         for i in range(self.population_size):
             if i not in new_elitists:  # Spare the new elitists
-                print("i,",i)
                 if random.random() < self.args.mutation_prob: self.mutate_inplace(pop[i])
 
         return new_elitists[0]
