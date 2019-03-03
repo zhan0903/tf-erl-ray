@@ -35,10 +35,10 @@ class ActorPolicy(object):
         self.variables = ray.experimental.tf_utils.TensorFlowVariables(self.loss, self.sess)
 
     def set_weights(self, weight):
-        self.variables.set_weight(weight)
+        self.variables.set_weights(weight)
 
     def get_weights(self):
-        return self.variables.get_weight()
+        return self.variables.get_weights()
 
     def _build_net(self):
         with tf.name_scope('inputs'):
