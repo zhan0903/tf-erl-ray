@@ -114,7 +114,8 @@ class SSNE:
                             W[ind_dim1, ind_dim2] = random.gauss(0, 1)
                         else:  # mutauion even normal
                             print("random.gauss(0, mut_strength * W[ind_dim1, ind_dim2]),",random.gauss(0, mut_strength * W[ind_dim1, ind_dim2]))
-                            W[ind_dim1, ind_dim2] += 0.002
+                            W[ind_dim1, ind_dim2] = 0.009
+                            W[ind_dim1, ind_dim2] = W[ind_dim1, ind_dim2] + 0.002
                             W[ind_dim1, ind_dim2] += random.gauss(0, mut_strength * W[ind_dim1, ind_dim2])
 
                         # Regularization hard limit
