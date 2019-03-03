@@ -83,9 +83,9 @@ class SSNE:
         super_mut_prob = 0.05
         reset_prob = super_mut_prob + 0.05
 
-        num_params = len(list(gene.parameters()))
+        num_params = len(list(gene))
         ssne_probabilities = np.random.uniform(0, 1, num_params) * 2
-        model_params = gene.state_dict()
+        model_params = gene
 
         for i, key in enumerate(model_params): #Mutate each param
 
