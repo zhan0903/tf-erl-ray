@@ -109,6 +109,7 @@ class SSNE:
                         W[ind_dim1, ind_dim2] = self.regularize_weight(W[ind_dim1, ind_dim2], 1000000)
 
     def clone(self, master, replacee):  # Replace the replacee individual with master
+        print("type of mastar, replacee", type(master),type(replacee))
         for target_param, source_param in zip(replacee.parameters(), master.parameters()):
             target_param.data.copy_(source_param.data)
 

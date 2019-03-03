@@ -34,11 +34,11 @@ class ActorPolicy(object):
         self.sess.run(tf.global_variables_initializer())
         self.variables = ray.experimental.tf_utils.TensorFlowVariables(self.loss, self.sess)
 
-    def set_weights(self):
-        pass
+    def set_weights(self, weight):
+        self.variables.set_weight(weight)
 
     def get_weights(self):
-        return self.variables.get_flat()
+        return self.variables.get_weight()
 
     def _build_net(self):
         with tf.name_scope('inputs'):
