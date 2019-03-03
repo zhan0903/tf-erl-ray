@@ -122,7 +122,7 @@ class SSNE:
         # print(master,replacee)
         for k, v in master.items():
             # print(k,v)
-            replacee[k] = v
+            replacee[k] = copy.deepcopy(v)
 
 
         # for target_param, source_param in zip(replacee, master):
