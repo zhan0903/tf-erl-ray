@@ -86,7 +86,8 @@ class SSNE:
 
         num_params = len(list(gene))
         ssne_probabilities = np.random.uniform(0, 1, num_params) * 2
-        model_params = copy.deepcopy(gene)# gene
+        # model_params = copy.deepcopy(gene)# gene
+        model_params = gene
 
         for i, key in enumerate(model_params): #Mutate each param
 

@@ -8,6 +8,7 @@ from tensorflow.python.ops import random_ops
 import ray.experimental.tf_utils
 from policy import ActorPolicy
 import mod_neuro_evo as utils_ne
+import copy
 
 
 
@@ -192,10 +193,11 @@ if __name__ == "__main__":
     # print(all_fitness)
     # print(pops)
     print(time.time()-time_start)
+    pops_new = copy.deepcopy(pops)
 
     ##implement the evolver process
     evolver = utils_ne.SSNE(parameters)
-    elite_index = evolver.epoch(pops, all_fitness)
+    elite_index = evolver.epoch(pops_new, all_fitness)
     print("elite_index,",elite_index)
 
 
