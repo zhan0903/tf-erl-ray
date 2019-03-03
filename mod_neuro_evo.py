@@ -42,7 +42,9 @@ class SSNE:
             # References to the variable tensors
             W1 = v1
             W2 = v2
-            print(W1,W2)
+            print(W1)
+            print("-----------------------")
+            print(W2)
 
             if len(W1.shape) == 2: #Weights no bias
                 num_variables = W1.shape[0]
