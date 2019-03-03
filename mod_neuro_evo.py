@@ -96,9 +96,9 @@ class SSNE:
             # References to the variable keys
             W = model_params[key]
             # W.setflags(write=1)
-            print("W,before", W)
+
             if len(W.shape) == 2: #Weights, no bias
-                print("W,after", W)
+
                 num_weights = W.shape[0]*W.shape[1]
                 ssne_prob = ssne_probabilities[i]
 
@@ -108,17 +108,11 @@ class SSNE:
                         ind_dim1 = fastrand.pcg32bounded(W.shape[0])
                         ind_dim2 = fastrand.pcg32bounded(W.shape[-1])
                         random_num = random.random()
-                        print("W[ind_dim1, ind_dim2],", W[ind_dim1, ind_dim2])
-                        print("type,", type(W[ind_dim1, ind_dim2]))
-
                         if random_num < super_mut_prob:  # Super Mutation probability
                             W[ind_dim1, ind_dim2] += random.gauss(0, super_mut_strength * W[ind_dim1, ind_dim2])
                         elif random_num < reset_prob:  # Reset probability
                             W[ind_dim1, ind_dim2] = random.gauss(0, 1)
                         else:  # mutauion even normal
-                            print("random.gauss(0, mut_strength * W[ind_dim1, ind_dim2]),",random.gauss(0, mut_strength * W[ind_dim1, ind_dim2]))
-                            W[ind_dim1, ind_dim2] = 0.009
-                            W[ind_dim1, ind_dim2] = W[ind_dim1, ind_dim2] + 0.002
                             W[ind_dim1, ind_dim2] += random.gauss(0, mut_strength * W[ind_dim1, ind_dim2])
 
                         # Regularization hard limit
