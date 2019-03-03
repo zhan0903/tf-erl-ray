@@ -113,9 +113,14 @@ class SSNE:
         # replacee = copy.deepcopy(master)
         #
         print(master,replacee)
-        for target_param, source_param in zip(replacee, master):
-            print(type(target_param),type(source_param))
-            target_param.data.copy_(source_param.data)
+        for k,v in master.item():
+            print(k,v)
+            replacee[k] = v
+
+
+        # for target_param, source_param in zip(replacee, master):
+        #     print(type(target_param),type(source_param))
+        #     target_param.data.copy_(source_param.data)
 
     def reset_genome(self, gene):
         for param in (gene.parameters()):
