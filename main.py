@@ -193,13 +193,14 @@ if __name__ == "__main__":
     # print(all_fitness)
     # print(pops)
     time_evaluate = time.time()-time_start
+    time_middle = time.time()
     print("time for evalutation,",time_evaluate)
     pops_new = copy.deepcopy(pops)
     ##implement the evolver process
     evolver = utils_ne.SSNE(parameters)
     elite_index = evolver.epoch(pops_new, all_fitness)
     print("elite_index,",elite_index)
-    time_evolve = time.time()-time_evaluate
+    time_evolve = time.time()-time_middle
     print("time for evolve,",time_evolve)
 
 
