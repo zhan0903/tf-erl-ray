@@ -169,6 +169,7 @@ class SSNE:
         if len(unselects) % 2 != 0:  # Number of unselects left should be even
             unselects.append(unselects[fastrand.pcg32bounded(len(unselects))])
         for i, j in zip(unselects[0::2], unselects[1::2]):
+            print("i,j",i,j)
             off_i = random.choice(new_elitists);
             off_j = random.choice(offsprings)
             self.clone(master=pop[off_i], replacee=pop[i])
