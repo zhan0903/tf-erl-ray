@@ -69,9 +69,11 @@ class SSNE:
                     receiver_choice = random.random()  # Choose which gene to receive the perturbation
                     if receiver_choice < 0.5:
                         ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+                        print("ind_cr,",ind_cr)
                         W1[ind_cr] = W2[ind_cr]
                     else:
                         ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+                        print("ind_cr,", ind_cr)
                         W2[ind_cr] = W1[ind_cr]
 
     def mutate_inplace(self, gene):
