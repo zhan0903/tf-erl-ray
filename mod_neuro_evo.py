@@ -77,7 +77,7 @@ class SSNE:
                         W2[ind_cr] = W1[ind_cr]
 
     def mutate_inplace(self, gene):
-        gene.setflags(write=1)
+        # gene.setflags(write=1)
         mut_strength = 0.1
         num_mutation_frac = 0.1
         super_mut_strength = 10
@@ -94,6 +94,7 @@ class SSNE:
 
             # References to the variable keys
             W = model_params[key]
+            W.setflags(write=1)
             print("W,before", W)
             if len(W.shape) == 2: #Weights, no bias
                 print("W,after", W)
