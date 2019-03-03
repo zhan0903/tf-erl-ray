@@ -114,7 +114,7 @@ class SSNE:
         #
         print(master,replacee)
         for target_param, source_param in zip(replacee, master):
-            print(target_param,source_param)
+            print(type(target_param),type(source_param))
             target_param.data.copy_(source_param.data)
 
     def reset_genome(self, gene):
