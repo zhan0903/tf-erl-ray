@@ -105,13 +105,15 @@ class SSNE:
                         ind_dim1 = fastrand.pcg32bounded(W.shape[0])
                         ind_dim2 = fastrand.pcg32bounded(W.shape[-1])
                         random_num = random.random()
+                        print("W[ind_dim1, ind_dim2],", W[ind_dim1, ind_dim2])
+                        print("type,", type(W[ind_dim1, ind_dim2]))
 
                         if random_num < super_mut_prob:  # Super Mutation probability
                             W[ind_dim1, ind_dim2] += random.gauss(0, super_mut_strength * W[ind_dim1, ind_dim2])
                         elif random_num < reset_prob:  # Reset probability
                             W[ind_dim1, ind_dim2] = random.gauss(0, 1)
                         else:  # mutauion even normal
-                            W[ind_dim1, ind_dim2] += random.gauss(0, mut_strength *W[ind_dim1, ind_dim2])
+                            W[ind_dim1, ind_dim2] += random.gauss(0, mut_strength * W[ind_dim1, ind_dim2])
 
                         # Regularization hard limit
                         W[ind_dim1, ind_dim2] = self.regularize_weight(W[ind_dim1, ind_dim2], 1000000)
