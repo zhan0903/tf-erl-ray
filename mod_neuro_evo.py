@@ -113,7 +113,7 @@ class SSNE:
         # replacee = copy.deepcopy(master)
         #
         print(master,replacee)
-        for k,v in master.item():
+        for k,v in master.items():
             print(k,v)
             replacee[k] = v
 
