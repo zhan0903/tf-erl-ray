@@ -95,7 +95,7 @@ class SSNE:
 
             # References to the variable keys
             W = model_params[key]
-            W.setflags(write=1)
+            # W.setflags(write=1)
             print("W,before", W)
             if len(W.shape) == 2: #Weights, no bias
                 print("W,after", W)
