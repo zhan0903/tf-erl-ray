@@ -197,6 +197,7 @@ class SSNE:
         # Mutate all genes in the population except the new elitists
         for i in range(self.population_size):
             if i not in new_elitists:  # Spare the new elitists
+                print("i,",i)
                 if random.random() < self.args.mutation_prob: self.mutate_inplace(pop[i])
 
         return new_elitists[0]
