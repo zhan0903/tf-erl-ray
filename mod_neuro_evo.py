@@ -112,6 +112,7 @@ class SSNE:
         print("type of mastar, replacee", type(master),type(replacee))
         # replacee = copy.deepcopy(master)
         #
+        print(master,replacee)
         for target_param, source_param in zip(replacee, master):
             print(target_param,source_param)
             target_param.data.copy_(source_param.data)
