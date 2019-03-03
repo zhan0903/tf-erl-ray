@@ -37,11 +37,11 @@ class SSNE:
         return weight
 
     def crossover_inplace(self, gene1, gene2):
-        for param1, param2 in zip(gene1.parameters(), gene2.parameters()):
+        for (k1,v1), (k2,v2) in zip(gene1.items(), gene2.items()):
 
             # References to the variable tensors
-            W1 = param1.data
-            W2 = param2.data
+            W1 = v1
+            W2 = v2
 
             if len(W1.shape) == 2: #Weights no bias
                 num_variables = W1.shape[0]
@@ -109,12 +109,12 @@ class SSNE:
                         W[ind_dim1, ind_dim2] = self.regularize_weight(W[ind_dim1, ind_dim2], 1000000)
 
     def clone(self, master, replacee):  # Replace the replacee individual with master
-        print("type of mastar, replacee", type(master),type(replacee))
+        # print("type of mastar, replacee", type(master),type(replacee))
         # replacee = copy.deepcopy(master)
         #
-        print(master,replacee)
+        # print(master,replacee)
         for k,v in master.items():
-            print(k,v)
+            # print(k,v)
             replacee[k] = v
 
 
