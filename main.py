@@ -154,7 +154,7 @@ class Worker(object):
                 self.num_frames += 1
             state = next_state
         # if store_transition: self.num_games += 1
-        print("self.num_frames,",self.num_frames)
+        # print("self.num_frames,",self.num_frames)
         self.policy.learn()
 
         return total_reward, self.policy.get_weights(), self.num_frames
@@ -195,18 +195,17 @@ if __name__ == "__main__":
                for _ in range(num_workers)]
     pops_new = [None for _ in range(num_workers)]
     print(pops_new)
-
+    time_start = time.time()
     while True:
         # parallel pg process
-        time_start = time.time()
         rollout_ids = [worker.do_rollout.remote(pop_params) for worker, pop_params in zip(workers,pops_new)]
         results = ray.get(rollout_ids)
         all_fitness, pops, num_frames = process_results(results)
-        print("maximum score,", max(all_fitness))
-        print("all num_frames,", sum(num_frames))
+        # print("maximum score,", max(all_fitness))
+        # print("all num_frames,", sum(num_frames))
         time_evaluate = time.time()-time_start
         time_middle = time.time()
-        print("time for evalutation,",time_evaluate)
+        # print("time for evalutation,",time_evaluate)
         pops_new = copy.deepcopy(pops)
 
         # evolver process
@@ -214,10 +213,12 @@ if __name__ == "__main__":
         elite_index = evolver.epoch(pops_new, all_fitness)
         # print("elite_index,", elite_index)
         time_evolve = time.time()-time_middle
-        print("time for evolve,", time_evolve)
+        # print("time for evolve,", time_evolve)
 
         if sum(num_frames) % 40000 == 0:
-            pass
+            print("maximum score,", max(all_fitness))
+            print("all num_frames,", sum(num_frames))
+            print("time,",time.time()-time_start)
 
 
 
