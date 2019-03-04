@@ -216,7 +216,7 @@ if __name__ == "__main__":
         time_evolve = time.time()-time_middle
         print("time for evolve,", time_evolve)
 
-        if num_frames % 44000 == 0:
+        if sum(num_frames) % 40000 == 0:
             pass
 
 
