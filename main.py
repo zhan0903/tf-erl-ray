@@ -129,10 +129,26 @@ class Worker(object):
         self.policy = ActorPolicy(self.args.action_dim, self.args.state_dim, self.sess)
         self.num_frames = 0
 
-    def do_rollout(self, params,is_action_noise=False, store_transition=True):
-        total_reward = 0.0
+    def do_rollout(self, params, store_transition=True):
+        fitness = 0
         if params:
             self.policy.set_weights(params)
+
+        # todo: rollout in remote functions
+        for _ in range(self.args.num_evals):
+            fitness += self._rollout()
+
+        print("evaluate fitness,", fitness/self.args.num_evals)
+
+        self.policy.learn()
+        fitness_pg = self._rollout()
+        print("pg fitness,", fitness_pg)
+
+
+        return fitness, self.policy.get_weights(), self.num_frames
+
+    def _rollout(self, store_transition=True):
+        total_reward = 0.0
         state = self.env.reset()
         # state = utils.to_tensor(state).unsqueeze(0)
         # if self.args.is_cuda:
@@ -142,7 +158,7 @@ class Worker(object):
             action = self.policy.choose_action(state)
             # action.clamp(-1, 1)
             # action = utils.to_numpy(action.cpu())
-            if is_action_noise: action += self.ounoise.noise()
+            # if is_action_noise: action += self.ounoise.noise()
             next_state, reward, done, info = self.env.step(action)  # Simulate one step in environment
             # next_state = utils.to_tensor(next_state).unsqueeze(0)
             # if self.args.is_cuda:
@@ -153,11 +169,8 @@ class Worker(object):
                 self.policy.store_transition(state, action, reward)
                 self.num_frames += 1
             state = next_state
-        # if store_transition: self.num_games += 1
-        # print("self.num_frames,",self.num_frames)
-        self.policy.learn()
+        return total_reward
 
-        return total_reward, self.policy.get_weights(), self.num_frames
 
 
 def process_results(results):
@@ -168,7 +181,6 @@ def process_results(results):
         num_frames.append(result[2])
         pops.append(result[1])
         fitness.append(result[0])
-
     return fitness, pops, num_frames
 
 
@@ -194,7 +206,7 @@ if __name__ == "__main__":
     workers = [Worker.remote(parameters)
                for _ in range(num_workers)]
     pops_new = [None for _ in range(num_workers)]
-    print(pops_new)
+    # print(pops_new)
     time_start = time.time()
     while True:
         # parallel pg process
