@@ -154,6 +154,7 @@ class Worker(object):
                 self.num_frames += 1
             state = next_state
         # if store_transition: self.num_games += 1
+        print("self.num_frames,",self.num_frames)
         self.policy.learn()
 
         return total_reward, self.policy.get_weights(), self.num_frames
@@ -211,9 +212,12 @@ if __name__ == "__main__":
         # evolver process
         evolver = utils_ne.SSNE(parameters)
         elite_index = evolver.epoch(pops_new, all_fitness)
-        print("elite_index,", elite_index)
+        # print("elite_index,", elite_index)
         time_evolve = time.time()-time_middle
         print("time for evolve,", time_evolve)
+
+        if num_frames % 44000 == 0:
+
 
 
 
