@@ -217,6 +217,7 @@ if __name__ == "__main__":
         print("time for evolve,", time_evolve)
 
         if num_frames % 44000 == 0:
+            pass
 
 
 
