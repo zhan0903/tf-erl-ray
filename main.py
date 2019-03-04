@@ -138,14 +138,13 @@ class Worker(object):
         for _ in range(self.args.num_evals):
             fitness += self._rollout()
 
-        print("evaluate fitness,", fitness/self.args.num_evals)
+        # print("evaluate fitness,", fitness/self.args.num_evals)
 
         self.policy.learn()
         fitness_pg = self._rollout()
-        print("pg fitness,", fitness_pg)
+        print("evalute, pg fitness,", fitness, fitness_pg)
 
-
-        return fitness, self.policy.get_weights(), self.num_frames
+        return fitness/self.args.num_evals, self.policy.get_weights(), self.num_frames
 
     def _rollout(self, store_transition=True):
         total_reward = 0.0
@@ -227,7 +226,7 @@ if __name__ == "__main__":
         time_evolve = time.time()-time_middle
         # print("time for evolve,", time_evolve)
 
-        if sum(num_frames) % 40000 == 0:
+        if sum(num_frames) % 44000 == 0:
             print("maximum score,", max(all_fitness))
             print("all num_frames,", sum(num_frames))
             print("time,",time.time()-time_start)
